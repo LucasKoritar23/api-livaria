@@ -8,8 +8,11 @@ services:
   api:
     build: .
     image: api-livraria
+    links:
+      - "db"
     networks:
       - api
+      - db
     ports:
       - "3000:3000"
     restart: on-failure
@@ -24,4 +27,5 @@ services:
       - 5432:5432
     networks:
       - db
+      - api
     restart: on-failure
