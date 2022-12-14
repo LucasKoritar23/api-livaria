@@ -16,6 +16,8 @@ services:
     ports:
       - "3000:3000"
     restart: on-failure
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
       
   db:
     image: postgres:latest

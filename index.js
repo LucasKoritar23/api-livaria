@@ -147,15 +147,29 @@ app.get("/livros/:id", (request, response) => {
 app.delete("/livros/:id", (request, response) => {
     const id = parseInt(request.params.id);
     pool.query(
-      "DELETE FROM livros WHERE id = $1",
+      "SELECT count(*) FROM livros WHERE id = $1",
       [id],
       (error, results) => {
         if (error) {
           throw error;
         }
-        response.status(200).send(results.rows[0]);
+        if (results.rows[0].count == '0'){
+          return response.status(404).send({message: "Id do Livro não encontrado"});
+        } else {
+          pool.query(
+            "DELETE FROM livros WHERE id = $1",
+            [id],
+            (error, results) => {
+              if (error) {
+                throw error;
+              }
+              return response.status(200).send({message: "Livro Deletado com sucesso"});
+            }
+          );
+        }
       }
     );
+
 });
 
 // PUT LIVROS
@@ -228,17 +242,29 @@ app.put("/livros/:id", (request, response) => {
       });
     }
 
-    const update_at = new Date();
     pool.query(
-        "UPDATE livros SET nome = $1, autor = $2, data_publicacao = $3, qtde_paginas = $4, update_at = $5 WHERE id = $6 RETURNING *",
-      [nome, autor, dataPublicacao, qtdePaginas, update_at, id],
+      "SELECT count(*) FROM livros WHERE id = $1",
+      [id],
       (error, results) => {
         if (error) {
           throw error;
         }
-        response.status(200).send(results.rows[0]);
-      }
-    );
+        if (results.rows[0].count == '0'){
+          return response.status(404).send({message: "Id do Livro não encontrado"});
+        } else {
+          const update_at = new Date();
+          pool.query(
+              "UPDATE livros SET nome = $1, autor = $2, data_publicacao = $3, qtde_paginas = $4, update_at = $5 WHERE id = $6 RETURNING *",
+            [nome, autor, dataPublicacao, qtdePaginas, update_at, id],
+            (error, results) => {
+              if (error) {
+                throw error;
+              }
+              response.status(200).send(results.rows[0]);
+            }
+          );
+        }
+      });
 });
 
 app.patch("/livros/:id", (request, response) => {
@@ -333,18 +359,30 @@ app.patch("/livros/:id", (request, response) => {
     }
     });
 
-    const update_at = new Date();
-    const values = fields.map(field => request.body[field]);
-    values.push(update_at);
-    values.push(id);
-    const query = `UPDATE livros SET ${newFields.map((field, i) => `${field} = $${i + 1}`).join(', ')}, update_at = $${values.length - 1} WHERE id = $${values.length} RETURNING *`
-    pool.query(query,
-    values,
+    pool.query(
+      "SELECT count(*) FROM livros WHERE id = $1",
+      [id],
       (error, results) => {
         if (error) {
           throw error;
         }
-        response.status(200).send(results.rows[0]);
-      }
-    );
+        if (results.rows[0].count == '0'){
+          return response.status(404).send({message: "Id do Livro não encontrado"});
+        } else {
+          const update_at = new Date();
+          const values = fields.map(field => request.body[field]);
+          values.push(update_at);
+          values.push(id);
+          const query = `UPDATE livros SET ${newFields.map((field, i) => `${field} = $${i + 1}`).join(', ')}, update_at = $${values.length - 1} WHERE id = $${values.length} RETURNING *`
+          pool.query(query,
+          values,
+            (error, results) => {
+              if (error) {
+                throw error;
+              }
+              response.status(200).send(results.rows[0]);
+            }
+          );
+        }
+      });
 });
