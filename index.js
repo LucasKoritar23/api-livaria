@@ -61,7 +61,7 @@ app.post("/livros", (request, response) => {
             .json({ error: "Autor do livro deve ser string" });
     }
 
-    if (qtdePaginas == "" || qtdePaginas == null) {
+    if (String(qtdePaginas) == "" || qtdePaginas == null) {
         return response
           .status(400)
           .json({ error: "Quantidade de paginas do livro não pode ser em branco ou nulo" });
@@ -202,7 +202,7 @@ app.put("/livros/:id", (request, response) => {
             .json({ error: "Autor do livro deve ser string" });
     }
 
-    if (qtdePaginas == "" || qtdePaginas == null) {
+    if (String(qtdePaginas) == "" || qtdePaginas == null) {
         return response
           .status(400)
           .json({ error: "Quantidade de paginas do livro não pode ser em branco ou nulo" });
@@ -328,7 +328,7 @@ app.patch("/livros/:id", (request, response) => {
               }
         }
         else if (val === 'qtdePaginas') {
-            if (request.body.qtdePaginas == "" || request.body.qtdePaginas == null) {
+            if (String(request.body.qtdePaginas) == "" || request.body.qtdePaginas == null) {
               throw response
                   .status(400)
                   .json({ error: "Quantidade de paginas do livro não pode ser em branco ou nulo" });
