@@ -1,0 +1,27 @@
+version: '3.7'
+
+networks:
+  api:
+  postgres:
+
+services:
+  api:
+    build: .
+    image: api-livraria
+    networks:
+      - api
+    ports:
+      - "3000:3000"
+    restart: on-failure
+      
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: livraria
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+    restart: on-failure
