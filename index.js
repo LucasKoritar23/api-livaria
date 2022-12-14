@@ -20,8 +20,8 @@ app.listen(port, () => {
 const Pool = require("pg").Pool;
 const pool = new Pool({
   user: "postgres",
-  host: "host.docker.internal",
-  // host: "localhost",
+  // host: "host.docker.internal",
+  host: "localhost",
   database: "livraria",
   password: "postgres",
   port: 5432,

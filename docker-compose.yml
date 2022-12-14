@@ -2,7 +2,7 @@ version: '3.7'
 
 networks:
   api:
-  postgres:
+  db:
 
 services:
   api:
@@ -23,5 +23,5 @@ services:
     ports:
       - 5432:5432
     networks:
-      - postgres
+      - db
     restart: on-failure
